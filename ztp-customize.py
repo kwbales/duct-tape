@@ -94,4 +94,4 @@ ztp_hosts = load_ztp_hosts()
 
 for host in ztp_hosts:
     target = find_switch(host['serial_number'], topology)
-    customize(target)
+    customize(host['ztp_ip'], target)

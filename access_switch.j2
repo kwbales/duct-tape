@@ -1,0 +1,18 @@
+set system host-name {{ hostname }}
+
+set vlans VL9_Mgmt l3-interface irb.9
+set interfaces irb mtu 9216
+del interfaces irb unit 9 family inet
+set interfaces irb unit 9 family inet mtu 9000
+set interfaces irb unit 9 family inet address {{ mgmt_ip }}/24
+
+{% for interface in interfaces -%}
+set interfaces {{interface.name}} mtu 9216
+{% if description is defined -%}
+set interfaces {{interface.name}} description {{interface.description}}
+{% endif -%}
+set interfaces {{interface.name}} unit 0 family ethernet-switching interface-mode {{interface.mode}}
+set interfaces {{interface.name}} unit 0 family ethernet-switching vlan members {{interface.vlan}}
+set protocols rstp interface {{interface.name}} edge
+{% endfor %}
+

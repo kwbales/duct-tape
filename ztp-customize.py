@@ -5,12 +5,12 @@ import re
 
 from jinja2 import Template
 from pprint import pprint as pp
-#from jnpr.junos import Device
+
+from jnpr.junos import Device
+from jnpr.junos.utils.config import Config
 
 HOST_CSV_DIR = "./hostcsv"
 PORT_REGEX = re.compile(r"^([g,x]e)")
-
-
 
 def load_switches():
     # Create initial place holder for all discovered switches
@@ -58,16 +58,40 @@ def find_switch(sn, switch_list):
             return switch
     return False
 
+def customize(hostip, switchvars, templatefile="access_switch.j2"):
+    dev = Device(user="netconf-test", host=hostip, password="lab123")
+    dev.open()
+ 
+    dev.bind(cu=Config)
+    dev.cu
+
+    dev.cu.load(template_path=templatefile, template_vars=switchvars, format="set")
+    dev.cu.commit()
+    dev.close()
+
+def load_ztp_hosts():
+    lines = csv.reader(open("./ztp-hosts.csv","rU"))
+    ztp_switches = []
+    # Create data structure for individual switches
+
+    for line in lines:
+        new_switch = {
+            'ztp_ip': line[0],
+            'hostname': line[1],
+            'model': line[2],
+            'serial_number': line[3],
+            'version': line[4],
+        }
+        ztp_switches.append(new_switch)
+    return ztp_switches
+#########
+#########
+#########
+
 
 topology = load_switches()
-#pp(topology)
+ztp_hosts = load_ztp_hosts()
 
-target = find_switch("PE3714080640", topology)
-#pp(target)
-
-with open("access_switch.j2") as t_fh:
-    t_format = t_fh.read()
-
-template = Template(t_format)
-print(template.render(target))
-
+for host in ztp_hosts:
+    target = find_switch(host['serial_number'], topology)
+    customize(target)

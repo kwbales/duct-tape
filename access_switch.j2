@@ -7,6 +7,7 @@ set interfaces irb unit 9 family inet mtu 9000
 set interfaces irb unit 9 family inet address {{ mgmt_ip }}/24
 
 {% for interface in interfaces -%}
+delete interfaces {{interface.name}}
 set interfaces {{interface.name}} mtu 9216
 {% if description is defined -%}
 set interfaces {{interface.name}} description {{interface.description}}

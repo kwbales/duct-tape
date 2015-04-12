@@ -65,6 +65,7 @@ def customize(hostip, switchvars, templatefile="access_switch.j2"):
     dev.bind(cu=Config)
     dev.cu
     print "Loading template onto: {0} (SN: {1}) @ {2}".format(switchvars['hostname'], switchvars['serial_number'], switchvars['mgmt_ip'])
+
     dev.cu.load(template_path=templatefile, template_vars=switchvars, format="set")
     dev.cu.commit()
     dev.close()
@@ -89,9 +90,13 @@ def load_ztp_hosts():
 #########
 #########
 
+print "Building known topology..."
 topology = load_switches()
+
+print "Building discovered hosts..."
 ztp_hosts = load_ztp_hosts()
 
+print "Begin customizing hosts..."
 for host in ztp_hosts:
     target = find_switch(host['serial_number'], topology)
     customize(host['ztp_ip'], target)

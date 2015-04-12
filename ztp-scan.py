@@ -8,7 +8,7 @@ from jnpr.junos import Device
 #################################
 
 MGMT_subnet = "172.32.32"
-host_ip = range(180,184)
+host_ip = range(20,25)
 username = 'netconf-test'
 password = 'lab123'
 
